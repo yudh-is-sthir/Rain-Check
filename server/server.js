@@ -1,6 +1,8 @@
 require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
+const RedisStore = require('connect-redis').default;
+const { createClient } = require('redis');
 const path = require('path');
 const db = require('./db');
 
@@ -12,19 +14,28 @@ const weatherRoutes = require('./routes/weather');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Initialize Redis Client
+let redisClient = createClient({
+  url: process.env.REDIS_URL || 'redis://localhost:6379'
+});
+
+redisClient.on('error', err => console.log('Redis Client Error', err));
+redisClient.connect().catch(console.error);
+
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Session configuration - using MemoryStore for simplicity
+// Session configuration - Using Redis
 app.use(session({
+  store: new RedisStore({ client: redisClient }),
   secret: process.env.SESSION_SECRET || 'your-secret-key-change-this',
   resave: false,
   saveUninitialized: false,
   cookie: {
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production' // HTTPS only in production
+    secure: process.env.NODE_ENV === 'production'
   }
 }));
 
