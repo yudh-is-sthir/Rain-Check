@@ -1,0 +1,28 @@
+{
+  "name": "rain-check",
+  "version": "1.0.0",
+  "description": "A simple weather checking web application with user authentication",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "node server/server.js"
+  },
+  "keywords": [
+    "weather",
+    "authentication",
+    "express",
+    "nodejs"
+  ],
+  "author": "",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "better-sqlite3": "^9.2.2",
+    "connect-sqlite3": "^0.9.13",
+    "dotenv": "^16.3.1"
+  }
+}

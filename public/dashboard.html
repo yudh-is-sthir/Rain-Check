@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Rain-Check - Your personal weather companion">
+  <title>Dashboard - Rain-Check</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div class="container">
+    <div class="card">
+      <!-- Header with user info and logout -->
+      <div class="header">
+        <div>
+          <h1>🌦️ Rain-Check</h1>
+          <p class="user-info">Welcome, <span id="username">User</span>!</p>
+        </div>
+        <button class="btn btn-secondary" id="logout-btn" style="width: auto; padding: 0.5rem 1rem;">
+          Logout
+        </button>
+      </div>
+
+      <!-- Search bar -->
+      <div class="search-container">
+        <input type="text" id="city-input" placeholder="Enter city name (e.g., London, Tokyo)" autocomplete="off">
+        <button class="btn btn-primary" id="search-btn">
+          <span id="search-text">Search</span>
+          <span id="search-spinner" class="spinner hidden"></span>
+        </button>
+      </div>
+
+      <!-- Error message container -->
+      <div id="error-message" class="alert alert-error hidden"></div>
+
+      <!-- Weather display -->
+      <div id="weather-container" class="hidden">
+        <div class="weather-card">
+          <h2 id="city-name">—</h2>
+          <div class="weather-icon" id="weather-icon">☀️</div>
+          <div class="temperature" id="temperature">—°C</div>
+          <div class="weather-description" id="weather-description">—</div>
+
+          <div class="weather-details">
+            <div class="weather-detail">
+              <div class="weather-detail-label">Feels Like</div>
+              <div class="weather-detail-value" id="feels-like">—°C</div>
+            </div>
+            <div class="weather-detail">
+              <div class="weather-detail-label">Humidity</div>
+              <div class="weather-detail-value" id="humidity">—%</div>
+            </div>
+            <div class="weather-detail">
+              <div class="weather-detail-label">Wind Speed</div>
+              <div class="weather-detail-value" id="wind-speed">— m/s</div>
+            </div>
+            <div class="weather-detail">
+              <div class="weather-detail-label">Condition</div>
+              <div class="weather-detail-value" id="condition">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/dashboard.js"></script>
+</body>
+
+</html>

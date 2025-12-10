@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Rain-Check - Your personal weather companion">
+  <title>Login - Rain-Check</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>🌦️ Rain-Check</h1>
+      <p>Sign in to check the weather</p>
+      
+      <!-- Error message container -->
+      <div id="error-message" class="alert alert-error hidden"></div>
+      
+      <!-- Login form -->
+      <form id="login-form">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input 
+            type="text" 
+            id="username" 
+            name="username" 
+            placeholder="Enter your username"
+            required
+            autocomplete="username"
+          >
+        </div>
+        
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            placeholder="Enter your password"
+            required
+            autocomplete="current-password"
+          >
+        </div>
+        
+        <button type="submit" class="btn btn-primary" id="login-btn">
+          <span id="login-text">Sign In</span>
+          <span id="login-spinner" class="spinner hidden"></span>
+        </button>
+      </form>
+      
+      <p class="text-center mt-md" style="font-size: 0.875rem; color: var(--text-muted);">
+        Demo: username="demo", password="password123"
+      </p>
+    </div>
+  </div>
+  
+  <script src="/js/login.js"></script>
+</body>
+</html>
