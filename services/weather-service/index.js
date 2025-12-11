@@ -3,10 +3,14 @@ const express = require('express');
 const session = require('express-session');
 const RedisStore = require('connect-redis').default;
 const { createClient } = require('redis');
+const { Queue } = require('bullmq');
 
 const app = express();
 const PORT = process.env.PORT || 3002;
 const API_KEY = process.env.OPENWEATHER_API_KEY;
+
+const redisOptions = { connection: { host: 'redis', port: 6379 } };
+const weatherQueue = new Queue('weather-jobs', redisOptions);
 
 // Redis Client (Shared)
 let redisClient = createClient({
@@ -25,6 +29,15 @@ app.use(session({
   saveUninitialized: false,
   name: 'sid'
 }));
+
+// Debug Middleware
+app.use((req, res, next) => {
+  console.log('--- DEBUG REQUEST ---');
+  console.log('Headers:', req.headers);
+  console.log('Session ID:', req.sessionID);
+  console.log('User ID in Session:', req.session ? req.session.userId : 'No Session');
+  next();
+});
 
 // Middleware: Require Auth
 function requireAuth(req, res, next) {
@@ -59,6 +72,19 @@ app.get('/', requireAuth, async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
+});
+
+// Batch Weather Request (Async)
+app.post('/batch', requireAuth, async (req, res) => {
+  const { cities } = req.body;
+  if (!cities || !Array.isArray(cities)) return res.status(400).json({ error: 'Array of cities required' });
+
+  const job = await weatherQueue.add('batch-process', {
+    cities,
+    userId: req.session.userId
+  });
+
+  res.json({ message: 'Batch processing started', jobId: job.id, status: 'queued' });
 });
 
 app.listen(PORT, () => {

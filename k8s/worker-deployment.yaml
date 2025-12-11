@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-service
+spec:
+  replicas: 1 # In the future, we can scale this to 10!
+  selector:
+    matchLabels:
+      app: worker-service
+  template:
+    metadata:
+      labels:
+        app: worker-service
+    spec:
+      containers:
+      - name: worker-service
+        image: rain-check-worker:latest
+        imagePullPolicy: Never
+        env:
+        - name: REDIS_URL
+          value: "redis://redis:6379"
+        - name: OPENWEATHER_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: rain-check-secrets
+              key: OPENWEATHER_API_KEY

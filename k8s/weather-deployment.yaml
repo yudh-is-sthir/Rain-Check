@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weather-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: weather-service
+  template:
+    metadata:
+      labels:
+        app: weather-service
+    spec:
+      containers:
+      - name: weather-service
+        image: rain-check-weather:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 3002
+        env:
+        - name: PORT
+          value: "3002"
+        - name: REDIS_URL
+          value: "redis://redis:6379"
+        - name: SESSION_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: rain-check-secrets
+              key: SESSION_SECRET
+        - name: OPENWEATHER_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: rain-check-secrets
+              key: OPENWEATHER_API_KEY
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: weather-service
+spec:
+  selector:
+    app: weather-service
+  ports:
+  - port: 3002
+    targetPort: 3002

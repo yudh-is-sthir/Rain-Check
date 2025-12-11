@@ -164,6 +164,59 @@ function setLoading(isLoading) {
   }
 }
 
+// --- Batch Processing Logic ---
+const batchBtn = document.getElementById('batch-btn');
+const batchInput = document.getElementById('batch-input');
+const batchStatus = document.getElementById('batch-status');
+
+if (batchBtn) {
+  batchBtn.addEventListener('click', async () => {
+    const input = batchInput.value.trim();
+    if (!input) return;
+
+    // Parse cities (split by comma, clean whitespace)
+    const cities = input.split(',').map(c => c.trim()).filter(c => c.length > 0);
+
+    if (cities.length === 0) {
+      batchStatus.textContent = 'Please enter at least one city.';
+      batchStatus.className = 'alert alert-error';
+      batchStatus.classList.remove('hidden');
+      return;
+    }
+
+    // Reset UI
+    batchBtn.disabled = true;
+    batchBtn.textContent = 'Queueing...';
+    batchStatus.classList.add('hidden');
+
+    try {
+      const response = await fetch('/api/weather/batch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cities })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        batchStatus.textContent = `✅ Job Started! ID: ${data.jobId}. Status: ${data.status}`;
+        batchStatus.className = 'alert'; // default green/neutral style
+        batchStatus.style.background = 'rgba(0, 255, 100, 0.2)';
+        batchInput.value = ''; // clear input
+      } else {
+        throw new Error(data.error || 'Failed to start job');
+      }
+    } catch (error) {
+      batchStatus.textContent = `❌ Error: ${error.message}`;
+      batchStatus.className = 'alert alert-error';
+    } finally {
+      batchStatus.classList.remove('hidden');
+      batchBtn.disabled = false;
+      batchBtn.textContent = 'Start Batch Job 🚀';
+    }
+  });
+}
+
 // Initialize
 checkAuth();
 cityInput.focus();

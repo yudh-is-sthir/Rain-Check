@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-service
+  template:
+    metadata:
+      labels:
+        app: auth-service
+    spec:
+      containers:
+      - name: auth-service
+        image: rain-check-auth:latest # We will need to build this image locally
+        imagePullPolicy: Never # Use local image
+        ports:
+        - containerPort: 3001
+        env:
+        - name: PORT
+          value: "3001"
+        - name: REDIS_URL
+          value: "redis://redis:6379"
+        - name: SESSION_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: rain-check-secrets
+              key: SESSION_SECRET
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+spec:
+  selector:
+    app: auth-service
+  ports:
+  - port: 3001
+    targetPort: 3001
