@@ -1,83 +1,84 @@
-# Rain-Check 🌦️
+# 🌦️ Rain-Check Enterprise
+> A distributed, cloud-native weather monitoring system built to demonstrate Full-Stack to DevOps evolution.
 
-A simple weather checking web application built to understand full-stack development from idea to deployment.
+## 🚀 Project Overview
+Rain-Check began as a simple monolith and was refactored into a scalable microservices architecture. It demonstrates modern engineering practices including containerization, orchestration, and async background processing.
 
-## Features
-- 🔐 User Authentication (Login/Logout)
-- 🌤️ Real-time Weather Data
-- 📱 Responsive Design
-- ✨ Modern UI with Glassmorphism
+### 🏗️ Architecture (v2.0)
+The system is composed of **4 decoupled microservices**:
+1.  **Gateway (Nginx):** Reverse proxy handling routing and static frontend serving.
+2.  **Auth Service (Node.js):** Manages user identity and session issuance.
+3.  **Weather Service (Node.js):** Handles real-time weather data and batch ingestion.
+4.  **Worker Service (Node.js):** Background worker processing heavy batch jobs via Queue.
 
-## Tech Stack
-- **Backend:** Node.js + Express
-- **Database:** SQLite3
-- **Frontend:** HTML, CSS, JavaScript
-- **API:** OpenWeatherMap
+**Infrastructure:**
+*   **Orchestration:** Kubernetes (K8s) & Docker Compose
+*   **Data:** Redis (Distributed Sessions & BullMQ Job Queue) + SQLite (User Data)
+*   **Security:** Air-gapped backend services (only Gateway is public)
 
-## Getting Started
+---
 
-### Prerequisites
-- Node.js (v18 or higher)
-- npm (comes with Node.js)
+## 🛠️ How to Run
 
-### Installation
+### Option A: The "Cloud Native" Way (Kubernetes)
+*Prerequisite: Docker Desktop with Kubernetes enabled.*
 
-1. Clone the repository
+1.  **Build Images:**
+    ```bash
+    docker build -t rain-check-auth:latest -f services/auth-service/Dockerfile services/auth-service/
+    docker build -t rain-check-weather:latest -f services/weather-service/Dockerfile services/weather-service/
+    docker build -t rain-check-worker:latest -f services/worker-service/Dockerfile services/worker-service/
+    docker build -t rain-check-gateway:latest -f services/gateway/Dockerfile .
+    ```
+
+2.  **Deploy:**
+    ```bash
+    kubectl apply -f k8s/
+    ```
+
+3.  **Access:**
+    Open `http://localhost` (Port 80).
+
+### Option B: The "DevOps" Way (Docker Compose)
+*Best for local development.*
+
 ```bash
-git clone <your-repo-url>
-cd Rain-Check
+docker-compose up --build
 ```
+Access at `http://localhost:3000`.
 
-2. Install dependencies
+### Option C: The "Legacy" Way (Monolith v1)
+*The original simple version.*
+
 ```bash
+cd server
 npm install
-```
-
-3. Set up environment variables
-```bash
-# Copy the example file
-cp .env.example .env
-
-# Edit .env and add your OpenWeatherMap API key
-```
-
-4. Start the server
-```bash
 npm start
 ```
+Access at `http://localhost:3000`.
 
-5. Open your browser and visit `http://localhost:3000`
+---
 
-### Default Login Credentials
-- **Username:** demo
-- **Password:** password123
+## 🧪 Features
+*   **Secure Authentication:** Session-based auth backed by Redis.
+*   **Real-time Weather:** Fetches data from OpenWeatherMap.
+*   **Batch Processing (Pro):** Submit a list of 100+ cities; processed asynchronously by background workers.
+*   **Resilience:** Self-healing pods via Kubernetes.
 
-## Project Structure
+---
+
+## 📂 Project Structure
 ```
-Rain-Check/
-├── server/              # Backend code
-│   ├── server.js        # Express server
-│   ├── db.js            # Database setup
-│   ├── routes/          # API routes
-│   └── middleware/      # Custom middleware
-├── public/              # Frontend code
-│   ├── index.html       # Login page
-│   ├── dashboard.html   # Weather dashboard
-│   ├── css/             # Stylesheets
-│   └── js/              # Client-side JavaScript
-└── database/            # SQLite database
-
+├── k8s/                  # Kubernetes Manifests (Deployments, Services, Secrets)
+├── services/             # Microservices Source Code
+│   ├── auth-service/     # Login & DB Logic
+│   ├── weather-service/  # API & Queue Producer
+│   ├── worker-service/   # Queue Consumer (BullMQ)
+│   └── gateway/          # Nginx Config
+├── public/               # Frontend Assets (Glassmorphism UI)
+├── server/               # [LEGACY] V1 Monolithic Server
+└── docker-compose.yml    # Local Orchestration
 ```
-
-## API Endpoints
-
-### Authentication
-- `POST /api/auth/login` - User login
-- `POST /api/auth/logout` - User logout
-- `GET /api/auth/status` - Check authentication status
-
-### Weather
-- `GET /api/weather?city=<cityname>` - Get weather data for a city
 
 ## License
 MIT
